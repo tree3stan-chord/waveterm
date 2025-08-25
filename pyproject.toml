@@ -3,16 +3,16 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "wave-visualizer"
+name = "waveterm"
 version = "0.2.0"
 description = "A terminal-based music visualizer inspired by web audio visualizers"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Wave Team", email = "wave@example.com"}
+    {name = "espadonne (mfw)", email = "espadonne@outlook.com"}
 ]
 maintainers = [
-    {name = "Wave Team", email = "wave@example.com"}
+    {name = "espadonne (mfw)", email = "espadonne@outlook.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -31,7 +31,7 @@ classifiers = [
     "Topic :: Multimedia :: Graphics",
     "Topic :: Artistic Software",
 ]
-keywords = ["music", "visualizer", "terminal", "ascii", "audio", "fft"]
+keywords = ["music", "visualizer", "terminal", "ascii", "audio", "fft", "waveform"]
 requires-python = ">=3.8"
 
 dependencies = [
@@ -61,22 +61,22 @@ dev = [
     "mypy>=0.991",
 ]
 all = [
-    "wave-visualizer[audio,export,dev]"
+    "waveterm[audio,export,dev]"
 ]
 
 [project.urls]
-Homepage = "https://github.com/wave-team/wave"
-Documentation = "https://wave-visualizer.readthedocs.io"
-Repository = "https://github.com/wave-team/wave"
-"Bug Tracker" = "https://github.com/wave-team/wave/issues"
+Homepage = "https://github.com/waveterm-team/waveterm"
+Documentation = "https://waveterm.readthedocs.io"
+Repository = "https://github.com/waveterm-team/waveterm"
+"Bug Tracker" = "https://github.com/waveterm-team/waveterm/issues"
 
 [project.scripts]
-wave = "wave.cli:main"
-wave-demo = "wave.cli:demo"
+waveterm = "waveterm.cli:main"
+waveterm-demo = "waveterm.cli:demo"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["wave*"]
+include = ["waveterm*"]
 exclude = ["tests*", "docs*"]
 
 [tool.black]
@@ -114,4 +114,4 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
-addopts = "--cov=wave --cov-report=html --cov-report=term-missing"
+addopts = "--cov=waveterm --cov-report=html --cov-report=term-missing"
