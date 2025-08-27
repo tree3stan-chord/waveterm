@@ -165,49 +165,50 @@ class SettingsModal(BaseModal):
         
     def compose(self) -> ComposeResult:
         """Compose settings modal content"""
-        yield from super().compose()
-        
-        # Replace modal content with settings form
-        content_container = self.query_one("#modal_content")
-        
-        with content_container:
-            with Vertical():
-                # Audio Settings
-                yield Label("🎵 Audio Settings", classes="section_header")
-                with Horizontal():
-                    yield Label("Sensitivity:")
-                    yield Input(
-                        value=str(self.config.get('sensitivity', 1.0)),
-                        placeholder="1.0",
-                        id="sensitivity_input"
-                    )
-                
-                # Visual Settings  
-                yield Label("🎨 Visual Settings", classes="section_header")
-                with Horizontal():
-                    yield Label("FPS Target:")
-                    yield Input(
-                        value=str(self.config.get('fps', 30)),
-                        placeholder="30",
-                        id="fps_input"
-                    )
-                
-                with Horizontal():
-                    yield Label("Enable Colors:")
-                    yield Switch(
-                        value=self.config.get('colors', True),
-                        id="colors_switch"
-                    )
-                
-                # Advanced Settings
-                yield Label("🔧 Advanced Settings", classes="section_header")
-                with Horizontal():
-                    yield Label("Buffer Size:")
-                    yield Select(
-                        [(str(size), size) for size in [1024, 2048, 4096, 8192]],
-                        value=self.config.get('buffer_size', 2048),
-                        id="buffer_select"
-                    )
+        with Container(id="modal_container"):
+            yield Static(self.modal_title, id="modal_header")
+            with Container(id="modal_content"):
+                with Vertical():
+                    # Audio Settings
+                    yield Label("🎵 Audio Settings", classes="section_header")
+                    with Horizontal():
+                        yield Label("Sensitivity:")
+                        yield Input(
+                            value=str(self.config.get('sensitivity', 1.0)),
+                            placeholder="1.0",
+                            id="sensitivity_input"
+                        )
+                    
+                    # Visual Settings  
+                    yield Label("🎨 Visual Settings", classes="section_header")
+                    with Horizontal():
+                        yield Label("FPS Target:")
+                        yield Input(
+                            value=str(self.config.get('fps', 30)),
+                            placeholder="30",
+                            id="fps_input"
+                        )
+                    
+                    with Horizontal():
+                        yield Label("Enable Colors:")
+                        yield Switch(
+                            value=self.config.get('colors', True),
+                            id="colors_switch"
+                        )
+                    
+                    # Advanced Settings
+                    yield Label("🔧 Advanced Settings", classes="section_header")
+                    with Horizontal():
+                        yield Label("Buffer Size:")
+                        yield Select(
+                            [(str(size), size) for size in [1024, 2048, 4096, 8192]],
+                            value=self.config.get('buffer_size', 2048),
+                            id="buffer_select"
+                        )
+            with Horizontal(id="modal_buttons"):
+                with Horizontal(classes="button_group"):
+                    yield Button("Cancel", id="cancel_button", variant="error")
+                    yield Button("Save", id="save_button", variant="primary")
     
     def action_confirm(self) -> None:
         """Save settings and close"""
@@ -245,18 +246,20 @@ class ModeSelectModal(BaseModal):
         
     def compose(self) -> ComposeResult:
         """Compose mode selection content"""
-        yield from super().compose()
-        
-        content_container = self.query_one("#modal_content")
-        
-        with content_container:
-            with ListView(id="mode_list"):
-                for mode_id, mode_info in self.modes:
-                    is_current = "👈 CURRENT" if mode_id == self.current_mode else ""
-                    yield ListItem(
-                        Label(f"🎭 {mode_info} {is_current}"),
-                        id=f"mode_{mode_id}"
-                    )
+        with Container(id="modal_container"):
+            yield Static(self.modal_title, id="modal_header")
+            with Container(id="modal_content"):
+                with ListView(id="mode_list"):
+                    for mode_id, mode_info in self.modes:
+                        is_current = "👈 CURRENT" if mode_id == self.current_mode else ""
+                        yield ListItem(
+                            Label(f"🎭 {mode_info} {is_current}"),
+                            id=f"mode_{mode_id}"
+                        )
+            with Horizontal(id="modal_buttons"):
+                with Horizontal(classes="button_group"):
+                    yield Button("Cancel", id="cancel_button", variant="error")
+                    yield Button("Select", id="select_button", variant="primary")
     
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         """Handle mode selection"""
@@ -281,12 +284,14 @@ class FilePickerModal(BaseModal):
         
     def compose(self) -> ComposeResult:
         """Compose file picker content"""
-        yield from super().compose()
-        
-        content_container = self.query_one("#modal_content")
-        
-        with content_container:
-            yield DirectoryTree(self.initial_path, id="file_tree")
+        with Container(id="modal_container"):
+            yield Static(self.modal_title, id="modal_header")
+            with Container(id="modal_content"):
+                yield DirectoryTree(self.initial_path, id="file_tree")
+            with Horizontal(id="modal_buttons"):
+                with Horizontal(classes="button_group"):
+                    yield Button("Cancel", id="cancel_button", variant="error")
+                    yield Button("Select", id="select_button", variant="primary")
     
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
         """Handle file selection"""
@@ -313,32 +318,34 @@ class ExportModal(BaseModal):
         
     def compose(self) -> ComposeResult:
         """Compose export configuration content"""
-        yield from super().compose()
-        
-        content_container = self.query_one("#modal_content")
-        
-        with content_container:
-            with Vertical():
-                # Output file
-                yield Label("📁 Output File:")
-                yield Input(placeholder="export.gif", id="output_input")
-                
-                # Format selection
-                yield Label("🎞️ Format:")
-                yield Select(
-                    [("GIF", "gif"), ("MP4", "mp4"), ("Images", "images")],
-                    value="gif",
-                    id="format_select"
-                )
-                
-                # Duration and FPS
-                with Horizontal():
-                    yield Label("Duration (s):")
-                    yield Input(value="10", id="duration_input")
+        with Container(id="modal_container"):
+            yield Static(self.modal_title, id="modal_header")
+            with Container(id="modal_content"):
+                with Vertical():
+                    # Output file
+                    yield Label("📁 Output File:")
+                    yield Input(placeholder="export.gif", id="output_input")
                     
-                with Horizontal():
-                    yield Label("FPS:")
-                    yield Input(value="20", id="fps_input")
+                    # Format selection
+                    yield Label("🎞️ Format:")
+                    yield Select(
+                        [("GIF", "gif"), ("MP4", "mp4"), ("Images", "images")],
+                        value="gif",
+                        id="format_select"
+                    )
+                    
+                    # Duration and FPS
+                    with Horizontal():
+                        yield Label("Duration (s):")
+                        yield Input(value="10", id="duration_input")
+                        
+                    with Horizontal():
+                        yield Label("FPS:")
+                        yield Input(value="20", id="fps_input")
+            with Horizontal(id="modal_buttons"):
+                with Horizontal(classes="button_group"):
+                    yield Button("Cancel", id="cancel_button", variant="error")
+                    yield Button("Export", id="export_button", variant="primary")
     
     def action_confirm(self) -> None:
         """Return export settings"""

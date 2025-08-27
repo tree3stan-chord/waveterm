@@ -55,19 +55,19 @@ class WaveTermTUI(App):
     BINDINGS = [
         Binding("q", "quit", "Quit", priority=True),
         Binding("ctrl+c", "quit", "Quit", priority=True),
-        Binding("1", "mode('1')", "Bars", priority=True),
-        Binding("2", "mode('2')", "Waveform", priority=True),
-        Binding("3", "mode('3')", "Matrix", priority=True),
-        Binding("4", "mode('4')", "Particles", priority=True),
-        Binding("5", "mode('5')", "Circle", priority=True),
-        Binding("6", "mode('6')", "Starfield", priority=True),
-        Binding("7", "mode('7')", "Fire", priority=True),
-        Binding("8", "mode('8')", "Ocean", priority=True),
-        Binding("9", "mode('9')", "DNA", priority=True),
+        Binding("1", "mode('1')", "1-9 Mode", priority=True, show=True),
+        Binding("2", "mode('2')", "", priority=True, show=False),
+        Binding("3", "mode('3')", "", priority=True, show=False),
+        Binding("4", "mode('4')", "", priority=True, show=False),
+        Binding("5", "mode('5')", "", priority=True, show=False),
+        Binding("6", "mode('6')", "", priority=True, show=False),
+        Binding("7", "mode('7')", "", priority=True, show=False),
+        Binding("8", "mode('8')", "", priority=True, show=False),
+        Binding("9", "mode('9')", "", priority=True, show=False),
         Binding("space", "pause", "Pause/Resume", priority=True),
         Binding("s", "settings", "Settings", priority=True),
         Binding("h", "help", "Help", priority=True),
-        Binding("?", "help", "Help", priority=True),
+        Binding("?", "help", "Help", priority=True, show=False),
         Binding("m", "mode_select", "Select Mode", priority=True),
         Binding("f", "file_picker", "File Picker", priority=True),
         Binding("e", "export", "Export", priority=True),
@@ -114,7 +114,7 @@ class WaveTermTUI(App):
     def on_mount(self) -> None:
         """Called when the app is mounted"""
         logger.info("WaveTerm TUI mounted successfully")
-        self.title = f"WaveTerm v0.6.2 - {self.viz_mode.title()} Mode"
+        self.title = f"WaveTerm v0.6.3 - {self.viz_mode.title()} Mode"
         
         # Start visualization updates
         self.set_interval(1/30, self._update_visualization)  # 30 FPS
@@ -144,7 +144,7 @@ class WaveTermTUI(App):
         
         # Update title to show paused state
         pause_indicator = " [PAUSED]" if self.paused else ""
-        self.title = f"WaveTerm v0.6.2 - {self.viz_mode.title()} Mode{pause_indicator}"
+        self.title = f"WaveTerm v0.6.3 - {self.viz_mode.title()} Mode{pause_indicator}"
     
     def action_mode(self, mode_key: str) -> None:
         """Handle mode switching via number keys"""
@@ -161,7 +161,7 @@ class WaveTermTUI(App):
         """Change visualization mode"""
         if self.wave_app and self.wave_app.set_mode(new_mode):
             self.viz_mode = new_mode
-            self.title = f"WaveTerm v0.6.2 - {new_mode.title()} Mode"
+            self.title = f"WaveTerm v0.6.3 - {new_mode.title()} Mode"
             
             # Update mode selector
             mode_selector = self.query_one("#mode_selector", ModeSelector)
