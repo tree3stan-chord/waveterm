@@ -107,7 +107,7 @@ class WaveTermTUI(App):
     def on_mount(self) -> None:
         """Called when the app is mounted"""
         logger.info("WaveTerm TUI mounted successfully")
-        self.title = f"WaveTerm v0.6.5 - {self.viz_mode.title()} Mode"
+        self.title = f"WaveTerm v0.6.6 - {self.viz_mode.title()} Mode"
         
         # Start visualization updates at more reasonable rate
         self.set_interval(1/15, self._update_visualization)  # 15 FPS for better responsiveness
@@ -141,10 +141,10 @@ class WaveTermTUI(App):
         
         # Update title to show paused state
         pause_indicator = " [PAUSED]" if self.paused else ""
-        self.title = f"WaveTerm v0.6.5 - {self.viz_mode.title()} Mode{pause_indicator}"
+        self.title = f"WaveTerm v0.6.6 - {self.viz_mode.title()} Mode{pause_indicator}"
     
     def action_mode_1(self) -> None: self.change_mode("bars")
-    def action_mode_2(self) -> None: self.change_mode("waveform") 
+    def action_mode_2(self) -> None: self.change_mode("wave") 
     def action_mode_3(self) -> None: self.change_mode("matrix")
     def action_mode_4(self) -> None: self.change_mode("particles")
     def action_mode_5(self) -> None: self.change_mode("circle")
@@ -157,7 +157,7 @@ class WaveTermTUI(App):
         """Change visualization mode"""
         if self.wave_app and self.wave_app.set_mode(new_mode):
             self.viz_mode = new_mode
-            self.title = f"WaveTerm v0.6.5 - {new_mode.title()} Mode"
+            self.title = f"WaveTerm v0.6.6 - {new_mode.title()} Mode"
             logger.info(f"Changed mode to: {new_mode}")
             self.notify(f"Switched to {new_mode.title()} mode", timeout=2)
         else:
@@ -173,10 +173,10 @@ class WaveTermTUI(App):
     
     def action_help(self) -> None:
         """Show help overlay"""
-        help_text = """🌊 WaveTerm v0.6.5 - Help
+        help_text = """🌊 WaveTerm v0.6.6 - Help
 
 🎹 Visualization Modes:
-  1 - Bars        2 - Waveform    3 - Matrix
+  1 - Bars        2 - Wave        3 - Matrix
   4 - Particles   5 - Circle      6 - Starfield  
   7 - Fire        8 - Ocean       9 - DNA
 

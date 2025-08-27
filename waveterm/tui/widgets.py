@@ -34,7 +34,7 @@ class ModeSelector(Static):
         self.current_mode = initial_mode
         self.modes = [
             ("bars", "Frequency Bars"),
-            ("waveform", "Waveform"),  
+            ("wave", "Wave"),  
             ("matrix", "Matrix Rain"),
             ("particles", "Particle Field"),
             ("circle", "Circular Wave"),
