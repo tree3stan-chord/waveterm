@@ -107,10 +107,10 @@ class WaveTermTUI(App):
     def on_mount(self) -> None:
         """Called when the app is mounted"""
         logger.info("WaveTerm TUI mounted successfully")
-        self.title = f"WaveTerm v0.6.6 - {self.viz_mode.title()} Mode"
+        self.title = f"WaveTerm v0.6.7 - {self.viz_mode.title()} Mode"
         
-        # Start visualization updates at more reasonable rate
-        self.set_interval(1/15, self._update_visualization)  # 15 FPS for better responsiveness
+        # Start visualization updates at much slower rate for responsiveness
+        self.set_interval(1/5, self._update_visualization)  # 5 FPS to reduce input lag
     
     def _update_visualization(self) -> None:
         """Update the visualization display"""
@@ -119,9 +119,16 @@ class WaveTermTUI(App):
                 viz_display = self.query_one("#visualization_area", VisualizationDisplay)
                 viz_display.update_visualization()
                 
-                # Update status bar
-                status_bar = self.query_one("#status_bar", StatusBar)
-                status_bar.update_status(self.wave_app, self.viz_mode)
+                # Skip frequent status bar updates to reduce lag
+                # Only update status occasionally
+                import time
+                if not hasattr(self, '_last_status_update'):
+                    self._last_status_update = 0
+                
+                if time.time() - self._last_status_update > 2:  # Update status every 2 seconds only
+                    status_bar = self.query_one("#status_bar", StatusBar)
+                    status_bar.update_status(self.wave_app, self.viz_mode)
+                    self._last_status_update = time.time()
             except Exception as e:
                 logger.error(f"Visualization update error: {e}")
                 # Don't crash the TUI, just log the error
@@ -141,7 +148,7 @@ class WaveTermTUI(App):
         
         # Update title to show paused state
         pause_indicator = " [PAUSED]" if self.paused else ""
-        self.title = f"WaveTerm v0.6.6 - {self.viz_mode.title()} Mode{pause_indicator}"
+        self.title = f"WaveTerm v0.6.7 - {self.viz_mode.title()} Mode{pause_indicator}"
     
     def action_mode_1(self) -> None: self.change_mode("bars")
     def action_mode_2(self) -> None: self.change_mode("wave") 
