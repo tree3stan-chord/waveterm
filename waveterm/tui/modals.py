@@ -233,6 +233,13 @@ class SettingsModal(BaseModal):
             self.result = None
             
         self.dismiss(self.result)
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button clicks"""
+        if event.button.id == "cancel_button":
+            self.dismiss(None)
+        elif event.button.id == "save_button":
+            self.action_confirm()
 
 
 class ModeSelectModal(BaseModal):
@@ -272,6 +279,13 @@ class ModeSelectModal(BaseModal):
         """Return selected mode"""
         self.result = self.selected_mode
         self.dismiss(self.result)
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button clicks"""
+        if event.button.id == "cancel_button":
+            self.dismiss(None)
+        elif event.button.id == "select_button":
+            self.action_confirm()
 
 
 class FilePickerModal(BaseModal):
@@ -308,6 +322,13 @@ class FilePickerModal(BaseModal):
         """Return selected file"""
         self.result = self.selected_file
         self.dismiss(self.result)
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button clicks"""
+        if event.button.id == "cancel_button":
+            self.dismiss(None)
+        elif event.button.id == "select_button":
+            self.action_confirm()
 
 
 class ExportModal(BaseModal):
@@ -369,3 +390,10 @@ class ExportModal(BaseModal):
             self.result = None
             
         self.dismiss(self.result)
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button clicks"""
+        if event.button.id == "cancel_button":
+            self.dismiss(None)
+        elif event.button.id == "export_button":
+            self.action_confirm()
