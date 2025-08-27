@@ -42,7 +42,7 @@ class WaveConfig(BaseModel):
     """Main WaveTerm configuration"""
     
     # Core settings
-    version: str = Field(default="0.3.0", description="Config format version")
+    version: str = Field(default="0.4.0", description="Config format version")
     default_mode: str = Field(default="bars", description="Default visualization mode")
     default_input: str = Field(default="sim", description="Default input source")
     
