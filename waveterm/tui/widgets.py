@@ -237,13 +237,18 @@ class StatusBar(Static):
         level_display = "█" * level_bars + "░" * (20 - level_bars)
         
         text = Text()
+        text.append("🎨 Mode: ", style="bold cyan")
+        text.append(f"{getattr(self, 'current_mode', 'bars').title()}", style="bold yellow")
+        text.append("  │  ", style="dim")
         text.append("Audio: ", style="bold")
         text.append(level_display, style="green")
         text.append(f" {int(self.audio_level * 100)}%", style="bright_green")
         text.append("  │  ", style="dim")
         text.append(f"FPS: {self.fps:02d}", style="bold blue")
         text.append("  │  ", style="dim") 
-        text.append("[SPACE] Pause", style="dim")
+        text.append("[1-9] Switch", style="dim")
+        text.append("  │  ", style="dim")
+        text.append("[H] Help", style="dim")
         text.append("  │  ", style="dim")
         text.append("[Q] Quit", style="dim")
         
@@ -253,6 +258,9 @@ class StatusBar(Static):
         """Update status information"""
         current_time = time.time()
         self.frame_count += 1
+        
+        # Update current mode
+        self.current_mode = current_mode
         
         # Update FPS counter
         if current_time - self.last_fps_update >= 1.0:
