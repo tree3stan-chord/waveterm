@@ -13,6 +13,7 @@ except ImportError:
 from .basic import BasicVisualizations
 from .advanced import AdvancedVisualizations  
 from .extreme import ExtremeVisualizations
+from .enhanced import EnhancedVisualizations
 
 class VisualizationRegistry:
     """Central registry for all visualization modes"""
@@ -59,11 +60,13 @@ class VisualizationRegistry:
         basic = BasicVisualizations()
         advanced = AdvancedVisualizations()
         extreme = ExtremeVisualizations()
+        enhanced = EnhancedVisualizations()
         
         # Store instances for reuse
         self._instances['basic'] = basic
         self._instances['advanced'] = advanced
         self._instances['extreme'] = extreme
+        self._instances['enhanced'] = enhanced
         
         # Basic visualizations
         self.register("bars", "Frequency Bars", basic.frequency_bars, 
@@ -88,6 +91,18 @@ class VisualizationRegistry:
                      "advanced", "Rotating DNA double helix")
         self.register("neural", "Neural Network", advanced.neural_network,
                      "advanced", "Neural network with pulsing connections")
+        
+        # Enhanced visualizations (improved versions + new modes)
+        self.register("explosion", "Explosive Particles", enhanced.explosion,
+                     "enhanced", "Audio-reactive particle explosions with trails")
+        self.register("spiral", "Multi-Armed Spiral", enhanced.spiral, 
+                     "enhanced", "Spiraling arms with particle spray effects")
+        self.register("fractaltree", "Enhanced Fractal Tree", enhanced.fractal_tree,
+                     "enhanced", "Audio-reactive fractal tree with falling leaves")
+        self.register("matrixenhanced", "Enhanced Matrix", enhanced.enhanced_matrix,
+                     "enhanced", "Matrix rain with improved effects and audio sync")
+        self.register("glitchenhanced", "Enhanced Glitch Art", enhanced.glitch_art,
+                     "enhanced", "Digital corruption with scan lines and noise")
         
         # Extreme visualizations
         self.register("glitch", "Glitch Art", extreme.glitch_art,

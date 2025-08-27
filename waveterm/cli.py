@@ -42,6 +42,7 @@ def main(ctx, version):
               type=click.Choice([
                   'bars', 'wave', 'matrix', 'particles', 'circle',
                   'starfield', 'fire', 'ocean', 'dna', 'neural',
+                  'explosion', 'spiral', 'fractaltree', 'matrixenhanced', 'glitchenhanced',
                   'glitch', 'void', 'hypercube', 'fractal', 'portal'
               ]))
 @click.option("-i", "--input", default="sim", 
@@ -94,7 +95,8 @@ def run(mode, input, file, fps, sensitivity, config, headless, export):
               help="Initial visualization mode", 
               type=click.Choice([
                   'bars', 'waveform', 'matrix', 'particles', 'circle',
-                  'starfield', 'fire', 'ocean', 'dna'
+                  'starfield', 'fire', 'ocean', 'dna', 'neural',
+                  'explosion', 'spiral', 'fractaltree', 'matrixenhanced', 'glitchenhanced'
               ]))
 @click.option("-i", "--input", default="sim", 
               type=click.Choice(['mic', 'file', 'sim']),

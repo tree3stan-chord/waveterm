@@ -188,17 +188,13 @@ class WaveTermTUI(App):
     def action_mode_select(self) -> None:
         """Show mode selection dialog"""
         if self.wave_app:
-            available_modes = [
-                ("bars", "Frequency Bars"),
-                ("waveform", "Waveform"),
-                ("matrix", "Matrix Rain"),
-                ("particles", "Particle Field"),
-                ("circle", "Circular Wave"),
-                ("starfield", "Starfield Warp"),
-                ("fire", "Fire Flames"),
-                ("ocean", "Ocean Waves"),
-                ("dna", "DNA Helix"),
-            ]
+            # Get available modes from registry
+            from ..visualizations.registry import get_all_modes
+            all_modes = get_all_modes()
+            
+            available_modes = [(mode_id, info["name"]) for mode_id, info in all_modes.items()]
+            # Sort by category and name for better organization
+            available_modes.sort(key=lambda x: (all_modes[x[0]]["category"], x[1]))
             
             def handle_mode_result(result):
                 if result and result != self.current_mode:
