@@ -1,0 +1,209 @@
+Metadata-Version: 2.4
+Name: waveterm
+Version: 0.2.0
+Summary: A terminal-based music visualizer inspired by web audio visualizers
+Author-email: "espadonne (mfw)" <espadonne@outlook.com>
+Maintainer-email: "espadonne (mfw)" <espadonne@outlook.com>
+License: MIT License
+        
+        Copyright (c) 2025 espadonne (mfw)
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+Project-URL: Homepage, https://github.com/waveterm-team/waveterm
+Project-URL: Documentation, https://waveterm.readthedocs.io
+Project-URL: Repository, https://github.com/waveterm-team/waveterm
+Project-URL: Bug Tracker, https://github.com/waveterm-team/waveterm/issues
+Keywords: music,visualizer,terminal,ascii,audio,fft,waveform
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Multimedia :: Sound/Audio :: Analysis
+Classifier: Topic :: Multimedia :: Graphics
+Classifier: Topic :: Artistic Software
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: rich>=12.0.0
+Requires-Dist: click>=8.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: toml>=0.10.0
+Provides-Extra: audio
+Requires-Dist: sounddevice>=0.4.4; extra == "audio"
+Requires-Dist: librosa>=0.9.2; extra == "audio"
+Requires-Dist: pydub>=0.25.1; extra == "audio"
+Provides-Extra: export
+Requires-Dist: pillow>=9.0.0; extra == "export"
+Requires-Dist: imageio>=2.19.0; extra == "export"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=22.0.0; extra == "dev"
+Requires-Dist: isort>=5.10.0; extra == "dev"
+Requires-Dist: flake8>=4.0.0; extra == "dev"
+Requires-Dist: mypy>=0.991; extra == "dev"
+Provides-Extra: all
+Requires-Dist: waveterm[audio,dev,export]; extra == "all"
+Dynamic: license-file
+
+# WaveTerm 🌊
+
+A modern terminal-based music visualizer with stunning ASCII art effects.
+
+## ✨ Features
+
+- **15+ stunning visualizations** - Basic, Advanced, and Extreme modes
+- **Perfect for headless servers** - No audio hardware required
+- **Multiple input sources**: microphone, audio files, or simulated audio
+- **Modern CLI interface** with Rich formatting
+- **Plugin architecture** for custom visualizations  
+- **Export capabilities** - Save frames, GIFs, and videos
+- **Cross-platform**: Linux, macOS, Windows
+
+## 🚀 Quick Start
+
+```bash
+# Install WaveTerm
+pip install waveterm
+
+# Run demo (no audio required)
+waveterm-demo
+
+# Run with microphone input  
+waveterm run --mode matrix --input mic
+
+# Run with simulated audio (perfect for servers)
+waveterm run --mode glitch --input sim
+
+# Run with audio file
+waveterm run --input file --file song.mp3 --mode fire
+```
+
+## 🎨 Visualization Modes
+
+### Basic (5 modes)
+- `bars` - Frequency spectrum bars
+- `wave` - Oscilloscope waveform  
+- `matrix` - Matrix-style falling rain
+- `particles` - ASCII particle field
+- `circle` - Circular frequency display
+
+### Advanced (5 modes)  
+- `starfield` - Starfield warp effect
+- `fire` - ASCII flame simulation
+- `ocean` - Wave interference patterns
+- `dna` - Rotating DNA helix
+- `neural` - Neural network visualization
+
+### Extreme (5 modes)
+- `glitch` - Digital glitch art effects
+- `void` - Lovecraftian tentacles  
+- `hypercube` - 4D tesseract projection
+- `fractal` - Recursive ASCII fractals
+- `portal` - Swirling dimensional portal
+
+## 📋 CLI Commands
+
+```bash
+# List all available modes
+waveterm modes
+
+# Run diagnostics
+waveterm doctor
+
+# Create configuration  
+waveterm config
+
+# Export visualization
+waveterm export output.gif --mode hypercube --duration 10
+```
+
+## 🏗️ Architecture
+
+```
+waveterm/
+├── cli.py              # Modern Click CLI
+├── core/
+│   ├── app.py         # Main application  
+│   ├── config.py      # Configuration system
+│   └── diagnostics.py # System diagnostics
+├── audio/
+│   ├── processor.py   # Real audio processing
+│   └── simulator.py   # Audio simulation
+├── render/
+│   └── terminal.py    # Terminal rendering
+├── visualizations/
+│   ├── registry.py    # Plugin registry
+│   ├── basic.py       # Basic visualizations
+│   ├── advanced.py    # Advanced visualizations
+│   └── extreme.py     # Extreme visualizations
+└── config/
+    └── config.py      # Pydantic configurations
+```
+
+## 🖥️ Perfect for Servers
+
+WaveTerm works great on headless servers with **simulated audio patterns**:
+
+```bash
+# Electronic music simulation
+waveterm run --mode neural --input sim
+
+# Multiple realistic audio patterns available:
+# electronic, rock, ambient, dubstep, classical, techno, chill
+```
+
+## ⚙️ Configuration
+
+```bash
+# Create config file
+waveterm config
+
+# Config location: ~/.waveterm/config.toml
+```
+
+## 🔧 Development
+
+```bash
+# Install in development mode
+git clone https://github.com/espadonne/waveterm
+cd waveterm  
+pip install -e .
+
+# Run tests
+pytest
+
+# Install with audio support
+pip install waveterm[audio]
+
+# Install with export capabilities  
+pip install waveterm[export]
+
+# Install everything
+pip install waveterm[all]
+```

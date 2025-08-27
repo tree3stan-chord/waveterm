@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "waveterm"
-version = "0.2.0"
+version = "0.3.0"
 description = "A terminal-based music visualizer inspired by web audio visualizers"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -37,6 +37,7 @@ requires-python = ">=3.8"
 dependencies = [
     "numpy>=1.21.0",
     "rich>=12.0.0",
+    "textual>=0.41.0",
     "click>=8.0.0",
     "pydantic>=2.0.0",
     "toml>=0.10.0",
@@ -73,6 +74,7 @@ Repository = "https://github.com/waveterm-team/waveterm"
 [project.scripts]
 waveterm = "waveterm.cli:main"
 waveterm-demo = "waveterm.cli:demo"
+waveterm-tui = "waveterm.cli:tui"
 
 [tool.setuptools.packages.find]
 where = ["."]

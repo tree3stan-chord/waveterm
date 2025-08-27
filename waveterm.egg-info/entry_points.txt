@@ -1,0 +1,3 @@
+[console_scripts]
+waveterm = waveterm.cli:main
+waveterm-demo = waveterm.cli:demo

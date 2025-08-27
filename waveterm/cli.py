@@ -90,6 +90,43 @@ def run(mode, input, file, fps, sensitivity, config, headless, export):
         sys.exit(1)
 
 @main.command()
+@click.option("-m", "--mode", default="bars", 
+              help="Initial visualization mode", 
+              type=click.Choice([
+                  'bars', 'waveform', 'matrix', 'particles', 'circle',
+                  'starfield', 'fire', 'ocean', 'dna'
+              ]))
+@click.option("-i", "--input", default="sim", 
+              type=click.Choice(['mic', 'file', 'sim']),
+              help="Audio input source")
+@click.option("-f", "--file", type=click.Path(exists=True),
+              help="Audio file path (for file input)")
+def tui(mode, input, file):
+    """Launch interactive TUI interface"""
+    
+    if input == "file" and not file:
+        console.print("[red]Error:[/red] --file required when using file input")
+        sys.exit(1)
+    
+    try:
+        from .tui import WaveTermTUI
+        
+        console.print(f"[green]🌊 Starting WaveTerm TUI[/green] - Mode: [bold]{mode}[/bold]")
+        console.print("Interactive mode with keyboard controls enabled")
+        console.print("Press [bold]H[/bold] for help, [bold]Q[/bold] to quit\n")
+        
+        app = WaveTermTUI(mode=mode, input_source=input)
+        app.run()
+        
+    except ImportError:
+        console.print("[red]Error:[/red] TUI requires textual library")
+        console.print("Install with: pip install textual")
+        sys.exit(1)
+    except Exception as e:
+        console.print(f"[red]TUI Error:[/red] {e}")
+        sys.exit(1)
+
+@main.command()
 @click.option("--duration", default=30, help="Demo duration in seconds")
 @click.option("--cycle-time", default=5, help="Seconds per visualization")
 def demo(duration, cycle_time):
