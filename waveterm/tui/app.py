@@ -10,6 +10,7 @@ from textual.binding import Binding
 
 from ..core.logger import get_logger
 from .widgets import VisualizationDisplay, ControlPanel, StatusBar, ModeSelector
+from .modals import HelpModal, SettingsModal, ModeSelectModal, FilePickerModal, ExportModal
 from ..core.app import WaveApp
 
 logger = get_logger('tui.app')
@@ -58,6 +59,9 @@ class WaveTermTUI(App):
         Binding("space", "pause", "Pause/Resume", priority=True),
         Binding("s", "settings", "Settings", priority=True),
         Binding("h,?", "help", "Help", priority=True),
+        Binding("m", "mode_select", "Select Mode", priority=True),
+        Binding("f", "file_picker", "File Picker", priority=True),
+        Binding("e", "export", "Export", priority=True),
     ]
     
     def __init__(self, mode: str = "bars", input_source: str = "sim", **kwargs):
@@ -99,7 +103,7 @@ class WaveTermTUI(App):
     def on_mount(self) -> None:
         """Called when the app is mounted"""
         logger.info("WaveTerm TUI mounted successfully")
-        self.title = f"WaveTerm v0.3.0 - {self.current_mode.title()} Mode"
+        self.title = f"WaveTerm v0.4.0 - {self.current_mode.title()} Mode"
         
         # Start visualization updates
         self.set_interval(1/30, self._update_visualization)  # 30 FPS
@@ -129,7 +133,7 @@ class WaveTermTUI(App):
         
         # Update title to show paused state
         pause_indicator = " [PAUSED]" if self.paused else ""
-        self.title = f"WaveTerm v0.3.0 - {self.current_mode.title()} Mode{pause_indicator}"
+        self.title = f"WaveTerm v0.4.0 - {self.current_mode.title()} Mode{pause_indicator}"
     
     def action_mode(self, mode_key: str) -> None:
         """Handle mode switching via number keys"""
@@ -146,7 +150,7 @@ class WaveTermTUI(App):
         """Change visualization mode"""
         if self.wave_app and self.wave_app.set_mode(new_mode):
             self.current_mode = new_mode
-            self.title = f"WaveTerm v0.3.0 - {new_mode.title()} Mode"
+            self.title = f"WaveTerm v0.4.0 - {new_mode.title()} Mode"
             
             # Update mode selector
             mode_selector = self.query_one("#mode_selector", ModeSelector)
@@ -163,10 +167,109 @@ class WaveTermTUI(App):
         
     def action_settings(self) -> None:
         """Show settings dialog"""
-        # TODO: Implement settings modal
-        logger.info("Settings requested")
+        current_config = {
+            'sensitivity': getattr(self.wave_app, 'sensitivity', 1.0) if self.wave_app else 1.0,
+            'fps': 30,  # From the update interval
+            'colors': True,
+            'buffer_size': getattr(self.wave_app.audio_processor, 'buffer_size', 2048) if self.wave_app and self.wave_app.audio_processor else 2048
+        }
+        
+        def handle_settings_result(result):
+            if result:
+                logger.info(f"Applying settings: {result}")
+                self._apply_settings(result)
+        
+        self.push_screen(SettingsModal(current_config), handle_settings_result)
     
     def action_help(self) -> None:
-        """Show help dialog"""  
-        # TODO: Implement help modal
-        logger.info("Help requested")
+        """Show help dialog"""
+        self.push_screen(HelpModal())
+    
+    def action_mode_select(self) -> None:
+        """Show mode selection dialog"""
+        if self.wave_app:
+            available_modes = [
+                ("bars", "Frequency Bars"),
+                ("waveform", "Waveform"),
+                ("matrix", "Matrix Rain"),
+                ("particles", "Particle Field"),
+                ("circle", "Circular Wave"),
+                ("starfield", "Starfield Warp"),
+                ("fire", "Fire Flames"),
+                ("ocean", "Ocean Waves"),
+                ("dna", "DNA Helix"),
+            ]
+            
+            def handle_mode_result(result):
+                if result and result != self.current_mode:
+                    self.change_mode(result)
+            
+            self.push_screen(ModeSelectModal(self.current_mode, available_modes), handle_mode_result)
+    
+    def action_file_picker(self) -> None:
+        """Show file picker dialog"""
+        def handle_file_result(result):
+            if result:
+                logger.info(f"Audio file selected: {result}")
+                # TODO: Switch to file input mode with selected file
+                self.notify(f"Selected: {result}")
+        
+        self.push_screen(FilePickerModal(), handle_file_result)
+    
+    def action_export(self) -> None:
+        """Show export dialog"""
+        def handle_export_result(result):
+            if result:
+                logger.info(f"Export requested: {result}")
+                self._start_export(result)
+        
+        self.push_screen(ExportModal(), handle_export_result)
+    
+    def _apply_settings(self, settings: dict) -> None:
+        """Apply settings changes to the running app"""
+        try:
+            # Update sensitivity
+            if 'sensitivity' in settings and self.wave_app:
+                if self.wave_app.audio_processor:
+                    self.wave_app.audio_processor.sensitivity = settings['sensitivity']
+                elif self.wave_app.audio_simulator:
+                    # Simulators can also have sensitivity adjustments
+                    pass
+            
+            # Update FPS (by changing update interval)
+            if 'fps' in settings:
+                fps = settings['fps']
+                if hasattr(self, '_visualization_timer'):
+                    # Update the timer interval
+                    self.set_interval(1/fps, self._update_visualization)
+            
+            logger.info("Settings applied successfully")
+            self.notify("Settings updated!", severity="information")
+            
+        except Exception as e:
+            logger.error(f"Failed to apply settings: {e}")
+            self.notify("Failed to apply settings", severity="error")
+    
+    def _start_export(self, export_config: dict) -> None:
+        """Start export process with given configuration"""
+        try:
+            # This would integrate with the export system
+            self.notify(f"Export started: {export_config['output_file']}", severity="information")
+            logger.info(f"Export process started: {export_config}")
+            # TODO: Implement actual export functionality
+            
+        except Exception as e:
+            logger.error(f"Export failed: {e}")
+            self.notify("Export failed", severity="error")
+    
+    def on_mode_selector_mode_clicked(self, event: ModeSelector.ModeClicked) -> None:
+        """Handle mode selector click"""
+        self.action_mode_select()
+    
+    def on_control_panel_settings_clicked(self, event: ControlPanel.SettingsClicked) -> None:
+        """Handle settings button click"""
+        self.action_settings()
+    
+    def on_control_panel_help_clicked(self, event: ControlPanel.HelpClicked) -> None:
+        """Handle help button click"""
+        self.action_help()

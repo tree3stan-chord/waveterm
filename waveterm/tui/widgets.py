@@ -8,6 +8,7 @@ from typing import Optional
 from textual.widgets import Static, Select, Button, Label, ProgressBar
 from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
+from textual.message import Message
 from rich.console import RenderableType
 from rich.panel import Panel
 from rich.text import Text
@@ -21,6 +22,12 @@ class ModeSelector(Static):
     """Widget for selecting visualization modes"""
     
     current_mode = reactive("bars")
+    
+    class ModeClicked(Message):
+        """Message sent when mode selector is clicked"""
+        def __init__(self, current_mode: str):
+            self.current_mode = current_mode
+            super().__init__()
     
     def __init__(self, initial_mode: str = "bars", **kwargs):
         super().__init__(**kwargs)
@@ -43,10 +50,15 @@ class ModeSelector(Static):
         
         text = Text()
         text.append("Mode: ", style="bold blue")
-        text.append(f"[{current_name}]", style="bold cyan")
+        text.append(f"[{current_name}]", style="bold cyan on dim")  # Highlighted to show clickable
         text.append(" ▼", style="dim")
+        text.append(" (click or M)", style="dim italic")
         
-        return Panel(text, height=3, title="Visualization")
+        return Panel(text, height=3, title="🎨 Visualization")
+    
+    def on_click(self) -> None:
+        """Handle click on mode selector"""
+        self.post_message(self.ModeClicked(self.current_mode))
     
     def set_mode(self, mode: str) -> None:
         """Set the current mode"""
@@ -56,6 +68,14 @@ class ModeSelector(Static):
 
 class ControlPanel(Static):
     """Widget for audio input and general controls"""
+    
+    class SettingsClicked(Message):
+        """Message sent when settings is clicked"""
+        pass
+        
+    class HelpClicked(Message):
+        """Message sent when help is clicked"""
+        pass
     
     def __init__(self, input_source: str = "sim", **kwargs):
         super().__init__(**kwargs)
@@ -72,13 +92,23 @@ class ControlPanel(Static):
         
         text = Text()
         text.append("Input: ", style="bold green")
-        text.append(f"[{input_name}]", style="bold yellow")
-        text.append("  ", style="dim")
-        text.append("[Settings]", style="bold magenta")
-        text.append("  ", style="dim")
-        text.append("[Help]", style="bold white")
+        text.append(f"[{input_name}]", style="bold yellow on dim")
+        text.append("  │  ", style="dim")
+        text.append("[Settings]", style="bold magenta on dim")
+        text.append(" (S)  │  ", style="dim italic")
+        text.append("[Help]", style="bold white on dim")
+        text.append(" (H)", style="dim italic")
         
-        return Panel(text, height=3, title="Controls")
+        return Panel(text, height=3, title="🎛️ Controls")
+    
+    def on_click(self, event) -> None:
+        """Handle clicks on control panel elements"""
+        # Simple click area detection based on approximate text positions
+        x = event.x
+        if 15 <= x <= 28:  # Settings area
+            self.post_message(self.SettingsClicked())
+        elif x >= 40:  # Help area  
+            self.post_message(self.HelpClicked())
 
 
 class VisualizationDisplay(Static):
