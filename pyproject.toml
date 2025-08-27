@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "waveterm"
-version = "0.6.1"
-description = "A terminal-based music visualizer inspired by web audio visualizers"
+version = "0.6.2"
+description = "A terminal-based music visualizer with stunning ASCII art effects"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [

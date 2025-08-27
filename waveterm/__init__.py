@@ -2,7 +2,7 @@
 WaveTerm - Terminal Music Visualizer
 ====================================
 
-A modern terminal-based music visualizer inspired by web audio visualizers.
+A modern terminal-based music visualizer with stunning ASCII art effects.
 
 Features:
 - 15+ stunning visualizations
@@ -22,7 +22,7 @@ Or from command line:
     $ waveterm-demo  # No audio required
 """
 
-__version__ = "0.6.1"
+__version__ = "0.6.2"
 __author__ = "espadonne (mfw)"
 __email__ = "espadonne@outlook.com"
 
