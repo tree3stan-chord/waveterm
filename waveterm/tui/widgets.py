@@ -207,17 +207,9 @@ class VisualizationDisplay(Static):
         return text
     
     def update_visualization(self) -> None:
-        """Update the visualization display"""
-        self.frame_count += 1
-        current_time = time.time()
-        
-        # Refresh the display
+        """Update the visualization display - minimal version"""
+        # Just refresh, skip expensive frame counting
         self.refresh()
-        
-        # Update timing info
-        if current_time - self.last_update >= 1.0:
-            self.last_update = current_time
-            self.frame_count = 0
 
 
 class StatusBar(Static):
