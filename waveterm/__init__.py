@@ -22,7 +22,7 @@ Or from command line:
     $ waveterm-demo  # No audio required
 """
 
-__version__ = "0.6.4"
+__version__ = "0.6.5"
 __author__ = "espadonne (mfw)"
 __email__ = "espadonne@outlook.com"
 

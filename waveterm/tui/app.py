@@ -65,12 +65,8 @@ class WaveTermTUI(App):
         Binding("8", "mode_8", "", priority=True, show=False),
         Binding("9", "mode_9", "", priority=True, show=False),
         Binding("space", "pause", "Pause/Resume", priority=True),
-        Binding("s", "settings", "Settings", priority=True),
         Binding("h", "help", "Help", priority=True),
         Binding("?", "help", "Help", priority=True, show=False),
-        Binding("m", "mode_select", "Select Mode", priority=True),
-        Binding("f", "file_picker", "File Picker", priority=True),
-        Binding("e", "export", "Export", priority=True),
     ]
     
     def __init__(self, mode: str = "bars", input_source: str = "sim", file_path: str = None, **kwargs):
@@ -102,10 +98,7 @@ class WaveTermTUI(App):
         """Create the TUI layout"""
         yield Header(show_clock=True)
         
-        with Container(id="control_panel"):
-            with Horizontal():
-                yield ModeSelector(self.viz_mode, id="mode_selector")
-                yield ControlPanel(self.audio_input, id="controls")
+        # Removed redundant and broken control panel
         
         yield VisualizationDisplay(self.wave_app, id="visualization_area")
         yield StatusBar(id="status_bar")
@@ -114,7 +107,7 @@ class WaveTermTUI(App):
     def on_mount(self) -> None:
         """Called when the app is mounted"""
         logger.info("WaveTerm TUI mounted successfully")
-        self.title = f"WaveTerm v0.6.4 - {self.viz_mode.title()} Mode"
+        self.title = f"WaveTerm v0.6.5 - {self.viz_mode.title()} Mode"
         
         # Start visualization updates at more reasonable rate
         self.set_interval(1/15, self._update_visualization)  # 15 FPS for better responsiveness
@@ -148,7 +141,7 @@ class WaveTermTUI(App):
         
         # Update title to show paused state
         pause_indicator = " [PAUSED]" if self.paused else ""
-        self.title = f"WaveTerm v0.6.4 - {self.viz_mode.title()} Mode{pause_indicator}"
+        self.title = f"WaveTerm v0.6.5 - {self.viz_mode.title()} Mode{pause_indicator}"
     
     def action_mode_1(self) -> None: self.change_mode("bars")
     def action_mode_2(self) -> None: self.change_mode("waveform") 
@@ -164,76 +157,42 @@ class WaveTermTUI(App):
         """Change visualization mode"""
         if self.wave_app and self.wave_app.set_mode(new_mode):
             self.viz_mode = new_mode
-            self.title = f"WaveTerm v0.6.4 - {new_mode.title()} Mode"
-            
-            # Update mode selector
-            mode_selector = self.query_one("#mode_selector", ModeSelector)
-            mode_selector.set_mode(new_mode)
-            
+            self.title = f"WaveTerm v0.6.5 - {new_mode.title()} Mode"
             logger.info(f"Changed mode to: {new_mode}")
+            self.notify(f"Switched to {new_mode.title()} mode", timeout=2)
         else:
             logger.warning(f"Failed to change mode to: {new_mode}")
+            self.notify(f"Failed to switch to {new_mode}", severity="error")
     
     def change_input(self, new_input: str) -> None:
         """Change audio input source"""
         # This would require reinitializing the WaveApp
         logger.info(f"Input change requested: {new_input} (requires restart)")
         
-    def action_settings(self) -> None:
-        """Show settings dialog"""
-        current_config = {
-            'sensitivity': getattr(self.wave_app, 'sensitivity', 1.0) if self.wave_app else 1.0,
-            'fps': 30,  # From the update interval
-            'colors': True,
-            'buffer_size': getattr(self.wave_app.audio_processor, 'buffer_size', 2048) if self.wave_app and self.wave_app.audio_processor else 2048
-        }
-        
-        def handle_settings_result(result):
-            if result:
-                logger.info(f"Applying settings: {result}")
-                self._apply_settings(result)
-        
-        self.push_screen(SettingsModal(current_config), handle_settings_result)
+    # Removed settings modal - too slow and unresponsive
     
     def action_help(self) -> None:
-        """Show help dialog"""
-        self.push_screen(HelpModal())
-    
-    def action_mode_select(self) -> None:
-        """Show mode selection dialog"""
-        if self.wave_app:
-            # Get available modes from registry
-            from ..visualizations.registry import get_all_modes
-            all_modes = get_all_modes()
-            
-            available_modes = [(mode_id, info["name"]) for mode_id, info in all_modes.items()]
-            # Sort by category and name for better organization
-            available_modes.sort(key=lambda x: (all_modes[x[0]]["category"], x[1]))
-            
-            def handle_mode_result(result):
-                if result and result != self.viz_mode:
-                    self.change_mode(result)
-            
-            self.push_screen(ModeSelectModal(self.viz_mode, available_modes), handle_mode_result)
-    
-    def action_file_picker(self) -> None:
-        """Show file picker dialog"""
-        def handle_file_result(result):
-            if result:
-                logger.info(f"Audio file selected: {result}")
-                # TODO: Switch to file input mode with selected file
-                self.notify(f"Selected: {result}")
+        """Show help overlay"""
+        help_text = """🌊 WaveTerm v0.6.5 - Help
+
+🎹 Visualization Modes:
+  1 - Bars        2 - Waveform    3 - Matrix
+  4 - Particles   5 - Circle      6 - Starfield  
+  7 - Fire        8 - Ocean       9 - DNA
+
+🎛️ Controls:
+  SPACE - Pause/Resume
+  H / ? - Show this help
+  Q     - Quit
+
+📡 Audio Input: Simulated (headless mode)
+🎨 Current Mode: """ + self.viz_mode.title() + """
+
+Press any key to continue..."""
         
-        self.push_screen(FilePickerModal(), handle_file_result)
+        self.notify(help_text, title="Help", timeout=10)
     
-    def action_export(self) -> None:
-        """Show export dialog"""
-        def handle_export_result(result):
-            if result:
-                logger.info(f"Export requested: {result}")
-                self._start_export(result)
-        
-        self.push_screen(ExportModal(), handle_export_result)
+    # Removed all modal actions - they were too slow and unresponsive
     
     def _apply_settings(self, settings: dict) -> None:
         """Apply settings changes to the running app"""
@@ -272,14 +231,4 @@ class WaveTermTUI(App):
             logger.error(f"Export failed: {e}")
             self.notify("Export failed", severity="error")
     
-    def on_mode_selector_mode_clicked(self, event: ModeSelector.ModeClicked) -> None:
-        """Handle mode selector click"""
-        self.action_mode_select()
-    
-    def on_control_panel_settings_clicked(self, event: ControlPanel.SettingsClicked) -> None:
-        """Handle settings button click"""
-        self.action_settings()
-    
-    def on_control_panel_help_clicked(self, event: ControlPanel.HelpClicked) -> None:
-        """Handle help button click"""
-        self.action_help()
+    # Removed modal click handlers - using direct key bindings only
