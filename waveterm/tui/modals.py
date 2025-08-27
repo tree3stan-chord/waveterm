@@ -7,7 +7,7 @@ from textual.app import ComposeResult
 from textual.containers import Container, Vertical, Horizontal, Grid
 from textual.screen import ModalScreen
 from textual.widgets import (
-    Button, Label, Static, Input, Select, Slider, Switch,
+    Button, Label, Static, Input, Select, Switch,
     DirectoryTree, ListItem, ListView, Markdown
 )
 from textual.binding import Binding
@@ -176,20 +176,20 @@ class SettingsModal(BaseModal):
                 yield Label("🎵 Audio Settings", classes="section_header")
                 with Horizontal():
                     yield Label("Sensitivity:")
-                    yield Slider(
-                        value=self.config.get('sensitivity', 1.0),
-                        min=0.1, max=5.0, step=0.1,
-                        id="sensitivity_slider"
+                    yield Input(
+                        value=str(self.config.get('sensitivity', 1.0)),
+                        placeholder="1.0",
+                        id="sensitivity_input"
                     )
                 
                 # Visual Settings  
                 yield Label("🎨 Visual Settings", classes="section_header")
                 with Horizontal():
                     yield Label("FPS Target:")
-                    yield Slider(
-                        value=self.config.get('fps', 30),
-                        min=10, max=60, step=5,
-                        id="fps_slider"
+                    yield Input(
+                        value=str(self.config.get('fps', 30)),
+                        placeholder="30",
+                        id="fps_input"
                     )
                 
                 with Horizontal():
@@ -213,8 +213,8 @@ class SettingsModal(BaseModal):
         """Save settings and close"""
         try:
             # Gather form values
-            sensitivity = self.query_one("#sensitivity_slider", Slider).value
-            fps = int(self.query_one("#fps_slider", Slider).value)
+            sensitivity = float(self.query_one("#sensitivity_input", Input).value or "1.0")
+            fps = int(self.query_one("#fps_input", Input).value or "30")
             colors = self.query_one("#colors_switch", Switch).value
             buffer_size = self.query_one("#buffer_select", Select).value
             

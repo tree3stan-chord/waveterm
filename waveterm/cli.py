@@ -21,8 +21,20 @@ console = Console()
 
 @click.group(invoke_without_command=True)
 @click.option("--version", is_flag=True, help="Show version and exit")
+@click.option("-m", "--mode", default="bars", 
+              help="Initial visualization mode", 
+              type=click.Choice([
+                  'bars', 'waveform', 'matrix', 'particles', 'circle',
+                  'starfield', 'fire', 'ocean', 'dna', 'neural',
+                  'explosion', 'spiral', 'fractaltree', 'matrixenhanced', 'glitchenhanced'
+              ]))
+@click.option("-i", "--input", default="sim", 
+              type=click.Choice(['mic', 'file', 'sim']),
+              help="Audio input source")
+@click.option("-f", "--file", type=click.Path(exists=True),
+              help="Audio file path (for file input)")
 @click.pass_context
-def main(ctx, version):
+def main(ctx, version, mode, input, file):
     """🌊 WaveTerm - Terminal Music Visualizer
     
     A modern terminal-based music visualizer with stunning ASCII art effects.
@@ -33,8 +45,28 @@ def main(ctx, version):
         sys.exit(0)
         
     if ctx.invoked_subcommand is None:
-        # Default behavior - show help
-        console.print(ctx.get_help())
+        # Default behavior - launch TUI
+        if input == "file" and not file:
+            console.print("[red]Error:[/red] --file required when using file input")
+            sys.exit(1)
+        
+        try:
+            from .tui import WaveTermTUI
+            
+            console.print(f"[green]🌊 Starting WaveTerm[/green] - Mode: [bold]{mode}[/bold]")
+            console.print("Interactive mode - Press [bold]H[/bold] for help, [bold]Q[/bold] to quit")
+            time.sleep(1)  # Brief pause before clearing screen
+            
+            app = WaveTermTUI(mode=mode, input_source=input, file_path=file)
+            app.run()
+            
+        except ImportError:
+            console.print("[red]Error:[/red] TUI requires textual library")
+            console.print("Install with: pip install textual")
+            sys.exit(1)
+        except Exception as e:
+            console.print(f"[red]TUI Error:[/red] {e}")
+            sys.exit(1)
 
 @main.command()
 @click.option("-m", "--mode", default="bars", 
@@ -55,8 +87,8 @@ def main(ctx, version):
 @click.option("--config", type=click.Path(), help="Config file path")
 @click.option("--headless", is_flag=True, help="Run in headless mode")
 @click.option("--export", help="Export frames to directory")
-def run(mode, input, file, fps, sensitivity, config, headless, export):
-    """Run WaveTerm visualizer"""
+def legacy(mode, input, file, fps, sensitivity, config, headless, export):
+    """Run WaveTerm in legacy scrolling mode (deprecated)"""
     
     if input == "file" and not file:
         console.print("[red]Error:[/red] --file required when using file input")
@@ -90,43 +122,6 @@ def run(mode, input, file, fps, sensitivity, config, headless, export):
         console.print(f"[red]Error:[/red] {e}")
         sys.exit(1)
 
-@main.command()
-@click.option("-m", "--mode", default="bars", 
-              help="Initial visualization mode", 
-              type=click.Choice([
-                  'bars', 'waveform', 'matrix', 'particles', 'circle',
-                  'starfield', 'fire', 'ocean', 'dna', 'neural',
-                  'explosion', 'spiral', 'fractaltree', 'matrixenhanced', 'glitchenhanced'
-              ]))
-@click.option("-i", "--input", default="sim", 
-              type=click.Choice(['mic', 'file', 'sim']),
-              help="Audio input source")
-@click.option("-f", "--file", type=click.Path(exists=True),
-              help="Audio file path (for file input)")
-def tui(mode, input, file):
-    """Launch interactive TUI interface"""
-    
-    if input == "file" and not file:
-        console.print("[red]Error:[/red] --file required when using file input")
-        sys.exit(1)
-    
-    try:
-        from .tui import WaveTermTUI
-        
-        console.print(f"[green]🌊 Starting WaveTerm TUI[/green] - Mode: [bold]{mode}[/bold]")
-        console.print("Interactive mode with keyboard controls enabled")
-        console.print("Press [bold]H[/bold] for help, [bold]Q[/bold] to quit\n")
-        
-        app = WaveTermTUI(mode=mode, input_source=input)
-        app.run()
-        
-    except ImportError:
-        console.print("[red]Error:[/red] TUI requires textual library")
-        console.print("Install with: pip install textual")
-        sys.exit(1)
-    except Exception as e:
-        console.print(f"[red]TUI Error:[/red] {e}")
-        sys.exit(1)
 
 @main.command()
 @click.option("--duration", default=30, help="Demo duration in seconds")
