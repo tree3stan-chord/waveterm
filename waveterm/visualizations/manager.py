@@ -11,6 +11,9 @@ except ImportError:
     pass
 from ..render.terminal import VisualizationData, TerminalRenderer
 from .registry import get_mode, get_all_modes
+from ..core.logger import get_logger
+
+logger = get_logger('visualizations.manager')
 
 class VisualizationManager:
     """Manages and coordinates different visualization modes using registry"""
@@ -42,7 +45,7 @@ class VisualizationManager:
             viz_func(canvas, audio_data, elapsed_time)
         except Exception as e:
             # Fallback to bars on error
-            print(f"Visualization error in {mode}: {e}")
+            logger.warning(f"Visualization error in {mode}, falling back to bars: {e}")
             fallback_func = get_mode('bars')
             if fallback_func:
                 fallback_func(canvas, audio_data, elapsed_time)

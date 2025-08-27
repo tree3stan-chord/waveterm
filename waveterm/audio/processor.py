@@ -9,19 +9,23 @@ try:
     AUDIO_AVAILABLE = True
 except (ImportError, OSError) as e:
     AUDIO_AVAILABLE = False
-    print(f"Warning: sounddevice not available - audio input disabled ({e})")
+    logger = None  # Will be initialized later
     sd = None
+    # We'll log this warning after logger is initialized
     
 try:
     import librosa
     LIBROSA_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     LIBROSA_AVAILABLE = False
-    print("Warning: librosa not available - file input disabled")
+    # We'll log this warning after logger is initialized
 import threading
 import queue
 from typing import Optional, Tuple, Dict, Any
 import time
+from ..core.logger import get_logger
+
+logger = get_logger('audio.processor')
 
 class AudioData:
     """Container for processed audio data"""
@@ -45,6 +49,12 @@ class AudioProcessor:
         self.source = source
         self.file_path = file_path
         self.sensitivity = sensitivity
+        
+        # Log import warnings now that logger is available
+        if not AUDIO_AVAILABLE:
+            logger.warning("sounddevice not available - audio input disabled")
+        if not LIBROSA_AVAILABLE:
+            logger.warning("librosa not available - file input disabled")
         
         # Audio parameters
         self.sample_rate = 44100
@@ -81,7 +91,7 @@ class AudioProcessor:
             self.audio_file_data, self.sample_rate = librosa.load(
                 self.file_path, sr=self.sample_rate, mono=True
             )
-            print(f"Loaded audio file: {self.file_path} ({len(self.audio_file_data)/self.sample_rate:.1f}s)")
+            logger.info(f"Loaded audio file: {self.file_path} ({len(self.audio_file_data)/self.sample_rate:.1f}s)")
         except Exception as e:
             raise RuntimeError(f"Failed to load audio file: {e}")
     
@@ -91,7 +101,7 @@ class AudioProcessor:
             # Check available devices
             devices = sd.query_devices()
             default_input = sd.query_devices(kind='input')
-            print(f"Using microphone: {default_input['name']}")
+            logger.info(f"Using microphone: {default_input['name']}")
             
         except Exception as e:
             raise RuntimeError(f"Failed to setup microphone: {e}")
@@ -99,7 +109,7 @@ class AudioProcessor:
     def _microphone_callback(self, indata, frames, time, status):
         """Callback for microphone audio stream"""
         if status:
-            print(f"Audio input status: {status}")
+            logger.warning(f"Audio input status: {status}")
             
         # Convert to mono if stereo
         if indata.shape[1] > 1:
@@ -136,7 +146,7 @@ class AudioProcessor:
                 time.sleep(0.01)  # Small delay to prevent CPU spinning
                 
             except Exception as e:
-                print(f"Error in audio processing: {e}")
+                logger.error(f"Error in audio processing: {e}")
                 break
     
     def _process_microphone_data(self):

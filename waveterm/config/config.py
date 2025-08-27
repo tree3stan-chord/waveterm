@@ -7,6 +7,9 @@ from pathlib import Path
 from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 from rich.table import Table
+from ..core.logger import get_logger
+
+logger = get_logger('config')
 
 class AudioConfig(BaseModel):
     """Audio processing configuration"""
@@ -39,7 +42,7 @@ class WaveConfig(BaseModel):
     """Main WaveTerm configuration"""
     
     # Core settings
-    version: str = Field(default="0.2.0", description="Config format version")
+    version: str = Field(default="0.3.0", description="Config format version")
     default_mode: str = Field(default="bars", description="Default visualization mode")
     default_input: str = Field(default="sim", description="Default input source")
     
@@ -74,7 +77,7 @@ class WaveConfig(BaseModel):
                 data = toml.load(f)
             return cls(**data)
         except Exception as e:
-            print(f"Warning: Failed to load config from {config_path}: {e}")
+            logger.warning(f"Failed to load config from {config_path}: {e}")
             return cls()
     
     def save(self, config_path: Optional[Path] = None) -> None:

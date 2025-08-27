@@ -17,6 +17,9 @@ from ..audio.simulator import AudioSimulator
 from ..render.terminal import TerminalRenderer
 from ..visualizations.manager import VisualizationManager
 from ..config.config import WaveConfig
+from .logger import get_logger
+
+logger = get_logger('core.app')
 
 class WaveApp:
     def __init__(self, mode: str = "bars", input_source: str = "sim", 
@@ -54,7 +57,7 @@ class WaveApp:
                 )
                 self.audio_simulator = None
             except Exception as e:
-                print(f"Audio system unavailable, falling back to simulation: {e}")
+                logger.warning(f"Audio system unavailable, falling back to simulation: {e}")
                 self.audio_simulator = AudioSimulator('electronic')
                 self.audio_processor = None
         
@@ -111,7 +114,7 @@ class WaveApp:
                     time.sleep(target_frame_time - frame_time)
                     
         except Exception as e:
-            print(f"Error in main loop: {e}")
+            logger.error(f"Error in main loop: {e}")
         finally:
             self.cleanup()
     
