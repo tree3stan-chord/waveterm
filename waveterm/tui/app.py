@@ -64,10 +64,11 @@ class WaveTermTUI(App):
         Binding("e", "export", "Export", priority=True),
     ]
     
-    def __init__(self, mode: str = "bars", input_source: str = "sim", **kwargs):
+    def __init__(self, mode: str = "bars", input_source: str = "sim", file_path: str = None, **kwargs):
         super().__init__(**kwargs)
-        self.current_mode = mode
-        self.input_source = input_source
+        self.viz_mode = mode
+        self.audio_input = input_source
+        self.audio_file_path = file_path
         self.wave_app: WaveApp = None
         self.paused = False
         
@@ -78,12 +79,13 @@ class WaveTermTUI(App):
         """Initialize the core WaveTerm application"""
         try:
             self.wave_app = WaveApp(
-                mode=self.current_mode,
-                input_source=self.input_source,
+                mode=self.viz_mode,
+                input_source=self.audio_input,
+                file_path=self.audio_file_path,
                 headless=True,  # We'll handle the rendering in TUI
                 fps=30
             )
-            logger.info(f"Initialized WaveApp with mode={self.current_mode}, input={self.input_source}")
+            logger.info(f"Initialized WaveApp with mode={self.viz_mode}, input={self.audio_input}")
         except Exception as e:
             logger.error(f"Failed to initialize WaveApp: {e}")
     
@@ -93,8 +95,8 @@ class WaveTermTUI(App):
         
         with Container(id="control_panel"):
             with Horizontal():
-                yield ModeSelector(self.current_mode, id="mode_selector")
-                yield ControlPanel(self.input_source, id="controls")
+                yield ModeSelector(self.viz_mode, id="mode_selector")
+                yield ControlPanel(self.audio_input, id="controls")
         
         yield VisualizationDisplay(self.wave_app, id="visualization_area")
         yield StatusBar(id="status_bar")
@@ -103,7 +105,7 @@ class WaveTermTUI(App):
     def on_mount(self) -> None:
         """Called when the app is mounted"""
         logger.info("WaveTerm TUI mounted successfully")
-        self.title = f"WaveTerm v0.4.0 - {self.current_mode.title()} Mode"
+        self.title = f"WaveTerm v0.6.1 - {self.viz_mode.title()} Mode"
         
         # Start visualization updates
         self.set_interval(1/30, self._update_visualization)  # 30 FPS
@@ -116,7 +118,7 @@ class WaveTermTUI(App):
             
             # Update status bar
             status_bar = self.query_one("#status_bar", StatusBar)
-            status_bar.update_status(self.wave_app, self.current_mode)
+            status_bar.update_status(self.wave_app, self.viz_mode)
     
     def action_quit(self) -> None:
         """Handle quit action"""
@@ -133,7 +135,7 @@ class WaveTermTUI(App):
         
         # Update title to show paused state
         pause_indicator = " [PAUSED]" if self.paused else ""
-        self.title = f"WaveTerm v0.4.0 - {self.current_mode.title()} Mode{pause_indicator}"
+        self.title = f"WaveTerm v0.6.1 - {self.viz_mode.title()} Mode{pause_indicator}"
     
     def action_mode(self, mode_key: str) -> None:
         """Handle mode switching via number keys"""
@@ -149,8 +151,8 @@ class WaveTermTUI(App):
     def change_mode(self, new_mode: str) -> None:
         """Change visualization mode"""
         if self.wave_app and self.wave_app.set_mode(new_mode):
-            self.current_mode = new_mode
-            self.title = f"WaveTerm v0.4.0 - {new_mode.title()} Mode"
+            self.viz_mode = new_mode
+            self.title = f"WaveTerm v0.6.1 - {new_mode.title()} Mode"
             
             # Update mode selector
             mode_selector = self.query_one("#mode_selector", ModeSelector)
@@ -197,10 +199,10 @@ class WaveTermTUI(App):
             available_modes.sort(key=lambda x: (all_modes[x[0]]["category"], x[1]))
             
             def handle_mode_result(result):
-                if result and result != self.current_mode:
+                if result and result != self.viz_mode:
                     self.change_mode(result)
             
-            self.push_screen(ModeSelectModal(self.current_mode, available_modes), handle_mode_result)
+            self.push_screen(ModeSelectModal(self.viz_mode, available_modes), handle_mode_result)
     
     def action_file_picker(self) -> None:
         """Show file picker dialog"""
